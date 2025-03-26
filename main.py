@@ -25,6 +25,34 @@ from GVAE import GVAEv3
 from sklearn.metrics.pairwise import rbf_kernel
 
 
+def cosine_similarity(list1, list2):
+    vec1 = np.array(list1)
+    vec2 = np.array(list2)
+    dot_product = np.dot(vec1, vec2)
+
+    vec1_norm = np.linalg.norm(vec1)
+    vec2_norm = np.linalg.norm(vec2)
+
+    similarity = dot_product / (vec1_norm * vec2_norm)
+
+    return similarity
+
+def get_avg_simi(graph1: nx.Graph, graph2: nx.Graph):
+    num = min(len(graph1.nodes), len(graph2.nodes))
+    simi_totoal = 0
+    graph1_nodes_l = list(graph1.nodes)
+    graph2_nodes_l = list(graph2.nodes)
+    for i in range(num):
+        simi_totoal += cosine_similarity(graph1.nodes[graph1_nodes_l[i]]['type_list'], graph2.nodes[graph2_nodes_l[i]]['type_list'])
+    return simi_totoal / num
+
+def graph_kernel(graph1: nx.Graph, graph2: nx.Graph, sigma: float) -> float:
+    ged_generator = nx.optimize_graph_edit_distance(graph1, graph2)
+    ged_puni = (next(ged_generator))
+
+    epsilon = 1e-7
+    cos_puni = 1 - get_avg_simi(graph1, graph2) + epsilon
+
 def calculate_mmd_tqdm(graphs1: list, graphs2: list, sigma: float) -> float:
     m = len(graphs1)
     n = len(graphs2)
