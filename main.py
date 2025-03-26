@@ -200,10 +200,10 @@ def train(train_loader, args):
                 else:
                     labels_t[j, :] = [0, 1]
 
-            graph_iterative[:, user_index_sheng[t]] = 0
             absorbing_matrix = copy.deepcopy(graph_iterative)
-            graph_iterative[:, user_index_sheng[t]] = 1
-            absorbing_matrix[user_index_sheng[t], :] = 0
+            graph_iterative[:, user_index_sheng[t]] = 0
+            absorbing_matrix[:, user_index_sheng[t]] = 1
+            absorbing_matrix[user_index_sheng[t], user_index_sheng[t]] = 0
             labels_t = torch.tensor(labels_t, dtype=float)
             weights = torch.tensor([0.9, 0.1]).to(args.device)
             criterion = nn.CrossEntropyLoss(weight=weights)
