@@ -199,7 +199,7 @@ def train(train_loader, args):
                 100. * (batch_idx + 1) / len(train_loader), local_total_loss, train_loss / n_samples,
                 time_iter / (batch_idx + 1)))
 
-def tes_reverse_process(train_loader, args):
+def tes_reverse_process(test_loader, args):
     args.device = 'cpu'
     pred_x_0_list = []
     start = time.time()
@@ -213,7 +213,8 @@ def tes_reverse_process(train_loader, args):
         opt.zero_grad()
         mean, logvar = graphVAE.encode(data[3][:, 0:7], torch.ones(T_total, T_total))
         z = graphVAE.reparameterize(mean, logvar)
-        prior = graphVAE.decode_attn_fast(z).cpu()  
+        prior = graphVAE.decode_attn_fast(z).cpu()
+        x_T = torch.randn_like(prior).cpu() + prior.cpu()
 
         graph_iteratives = []
         graph_iterative = torch.zeros_like(data[0])
@@ -238,9 +239,7 @@ def tes_reverse_process(train_loader, args):
             graph_iteratives.append(graph_iterative)
         pred_x_0 = sampler(x_T, graph_iteratives, prior, data[1].cpu())  
         pred_x_0_list.append(pred_x_0)
-        
-        time_iter = time.time() - start
-        train_loss += loss.item() * 1
+
         n_samples += 1
         exe_time += 1
     return pred_x_0_list
@@ -381,7 +380,7 @@ if __name__ == '__main__':
                     if len(all_MMD) >= 3:
                         print(all_MMD)
                         if all_MMD[-1] < all_MMD[-2] and all_MMD[-1] < all_MMD[-3] :
-                            pred = tes_reverse_process(loaders_Twitter[0], args)
+                            pred = tes_reverse_process(loaders_Twitter[1], args)
                             mmd = calculate_mmd_tqdm(loaders_Twitter[1].data['adj_list_DAG'], pred, 1.0)                       
                             print("best MMD: ", mmd)
                             break
