@@ -90,10 +90,10 @@ class DiffusionSampler(nn.Module):
         )
 
     def p_mean_variance(self, x_t, time_step, prior):
-        xt_prev_mean = main_xt[time_step] * x_t        
+        xt_prev_mean = self.main_xt[time_step] * x_t
         xt_prev_mean += self.additional_term[time_step] * prior
         
-        sigma_t_prev = self.sigma_coeff[time_step] * torch.sqrt(1 - alphas_bar[time_step])
+        sigma_t_prev = self.sigma_coeff[time_step] * torch.sqrt(1 - self.alphas_bar[time_step])
 
         return xt_prev_mean, sigma_t_prev
 
@@ -108,7 +108,7 @@ class DiffusionSampler(nn.Module):
             mean, sigma_t_prev = self.p_mean_variance(x_t, time_step, prior)
             if time_step > 0:
                 mean += sigma_t_prev * graph_var[time_step]
-                glo_noise_var = time_step /prior.shape[0] / prior.shape[0] * glo_var_coeff
+                glo_noise_var = time_step /prior.shape[0] / prior.shape[0] * self.glo_var_coeff
             else:
                 glo_noise_var = 0
             noise = torch.randn_like(x_t)
