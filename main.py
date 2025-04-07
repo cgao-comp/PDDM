@@ -320,6 +320,7 @@ def test(test_loader, args):
 
         mmd = compute_mmd(sorted_row_sums_ori, sorted_row_sums)
         mmd_total += mmd
+    return mmd_total/times
 
 if __name__ == '__main__':
     with open('3a_test_100persent_not_extended.pkl', 'rb') as f:
