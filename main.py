@@ -23,7 +23,7 @@ from model import DiffusionModule_GAT
 from GVAE import GVAEv3
 
 from sklearn.metrics.pairwise import rbf_kernel
-
+from scipy.stats import wasserstein_distance
 
 def cosine_similarity(list1, list2):
     vec1 = np.array(list1)
@@ -95,7 +95,10 @@ def calculate_mmd_tqdm(graphs1: list, graphs2: list, sigma: float) -> float:
     mmd = mean_within_group1 + mean_within_group2 - 2 * mean_between_groups
     return mmd
 
-def compute_mmd(degrees_real, degrees_gen, gamma=1.0):    
+def compute_wasserstein(degrees_real, degrees_gen):
+    return wasserstein_distance(degrees_real, degrees_gen)
+
+def compute_mmd(degrees_real, degrees_gen, gamma=10, norm=0.01):    
     K_real = rbf_kernel(degrees_real.reshape(-1, 1), degrees_real.reshape(-1, 1), gamma=gamma)   
     K_gen = rbf_kernel(degrees_gen.reshape(-1, 1), degrees_gen.reshape(-1, 1), gamma=gamma)   
     K_real_gen = rbf_kernel(degrees_real.reshape(-1, 1), degrees_gen.reshape(-1, 1), gamma=gamma)  
@@ -105,7 +108,7 @@ def compute_mmd(degrees_real, degrees_gen, gamma=1.0):
     term2 = np.sum(K_gen) / (N_gen * N_gen)     
     cross_term = np.sum(K_real_gen) / (N_real * N_gen)
     
-    mmd = term1 + term2 - 2 * cross_term
+    mmd = term1 + term2 - 2 * cross_term + norm * wasserstein_distance(degrees_real, degrees_gen)
     return mmd
 
 
