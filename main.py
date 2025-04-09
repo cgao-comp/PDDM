@@ -111,6 +111,22 @@ def compute_mmd(degrees_real, degrees_gen, gamma=10, norm=0.01):
     mmd = term1 + term2 - 2 * cross_term + norm * wasserstein_distance(degrees_real, degrees_gen)
     return mmd
 
+def compute_mmd_matched(degrees_real, degrees_gen, gamma=10, sample_size=10000, norm=0.0):
+    sample_size = min(sample_size, len(degrees_real), len(degrees_gen))  
+
+    real_sample = np.random.choice(degrees_real, size=sample_size, replace=False)
+    gen_sample = np.random.choice(degrees_gen, size=sample_size, replace=False)
+
+    K_real = rbf_kernel(real_sample.reshape(-1, 1), real_sample.reshape(-1, 1), gamma=gamma)
+    K_gen = rbf_kernel(gen_sample.reshape(-1, 1), gen_sample.reshape(-1, 1), gamma=gamma)
+    K_cross = rbf_kernel(real_sample.reshape(-1, 1), gen_sample.reshape(-1, 1), gamma=gamma)
+
+    term1 = K_real.mean() 
+    term2 = K_gen.mean() 
+    cross_term = K_cross.mean()
+
+    mmd = term1 + term2 - 2 * cross_term  + norm * wasserstein_distance(degrees_real, degrees_gen)
+    return mmd
 
 def collate_batch(batch):  
     B = len(batch)  
