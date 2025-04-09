@@ -98,7 +98,7 @@ def calculate_mmd_tqdm(graphs1: list, graphs2: list, sigma: float) -> float:
 def compute_wasserstein(degrees_real, degrees_gen):
     return wasserstein_distance(degrees_real, degrees_gen)
 
-def compute_mmd(degrees_real, degrees_gen, gamma=10, norm=0.05):    
+def compute_mmd(degrees_real, degrees_gen, gamma=10, norm=0.02):    
     K_real = rbf_kernel(degrees_real.reshape(-1, 1), degrees_real.reshape(-1, 1), gamma=gamma)   
     K_gen = rbf_kernel(degrees_gen.reshape(-1, 1), degrees_gen.reshape(-1, 1), gamma=gamma)   
     K_real_gen = rbf_kernel(degrees_real.reshape(-1, 1), degrees_gen.reshape(-1, 1), gamma=gamma)  
@@ -111,7 +111,7 @@ def compute_mmd(degrees_real, degrees_gen, gamma=10, norm=0.05):
     mmd = term1 + term2 - 2 * cross_term + norm * wasserstein_distance(degrees_real, degrees_gen)
     return mmd
 
-def compute_mmd_matched(degrees_real, degrees_gen, gamma=10, sample_size=10000, norm=0.02):
+def compute_mmd_matched(degrees_real, degrees_gen, gamma=10, sample_size=10000, norm=0.0):
     sample_size = min(sample_size, len(degrees_real), len(degrees_gen))  
 
     real_sample = np.random.choice(degrees_real, size=sample_size, replace=False)
