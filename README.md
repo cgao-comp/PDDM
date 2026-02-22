@@ -1,6 +1,7 @@
 # PDDM
 
-The code related to the paper below: A Prior-based Discrete Diffusion Model for Social Graph Generation.
+The code related to the paper below: 
+Shu Yin, Dongpeng Hou, Lianwei Wu, Xianghua Li, Chao Gao, A prior-based discrete diffusion model for social graph generation, The 34th International Joint Conference on Artificial Intelligence (IJCAI25), 2025, 3570-3578
 
 ## Statement
 Due to Twitter's policy restrictions and file size upload limitations, some datasets with existing links can be accessed through universally recognized ways:
